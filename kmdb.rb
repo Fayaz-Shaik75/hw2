@@ -75,14 +75,117 @@
 
 # Delete existing data, so you'll start fresh each time this script is run.
 # Use `Model.destroy_all` code.
-# TODO!
+
+
+Studio.destroy_all
+Movie.destroy_all
+Actor.destroy_all
+Role.destroy_all
+Rails.logger.info "------------------------"
+Rails.logger.info "----- FRESH START! -----"
+Rails.logger.info "------------------------"
 
 # Generate models and tables, according to the domain model.
 # TODO!
 
+# class CreateStudios < ActiveRecord::Migration[7.1]
+#     def change
+#       create_table :studios do |t|
+#         t.string "name"
+#         t.timestamps
+#       end
+#     end
+#   end
+# class CreateMovies < ActiveRecord::Migration[7.1]
+#   def change
+#     create_table :movies do |t|
+#       t.string "title"
+#       t.integer "year_released"
+#       t.string "rated"
+#       t.integer "studio_id"
+#       t.timestamps
+#     end
+#   end
+# end
+# class CreateActors < ActiveRecord::Migration[7.1]
+#   def change
+#     create_table :actors do |t|
+#       t.string "name"
+#       t.timestamps
+#     end
+#   end
+# end
+# class CreateRoles < ActiveRecord::Migration[7.1]
+#   def change
+#     create_table :roles do |t|
+#       t.integer "movie_id"
+#       t.string "character_name"
+#       t.integer "actor_id"
+#       t.timestamps
+#     end
+#   end
+# end
+
 # Insert data into the database that reflects the sample data shown above.
 # Do not use hard-coded foreign key IDs.
-# TODO!
+
+new_studio = Studio.new
+new_studio["name"] = "Warner Bros."
+new_studio.save
+
+new_movie = Movie.new
+new_movie["title"] = "Batman Begins"
+new_movie["year_released"] = 2005
+new_movie["rated"] = "PG-13"
+new_movie["studio_id"] = Studio.find_by({"name" => "Warner Bros."}).id
+new_movie.save
+
+new_movie = Movie.new
+new_movie["title"] = "The Dark Knight"
+new_movie["year_released"] = 2008
+new_movie["rated"] = "PG-13"
+new_movie["studio_id"] = Studio.find_by({"name" => "Warner Bros."}).id
+new_movie.save
+
+new_movie = Movie.new
+new_movie["title"] = "The Dark Knight Rises"
+new_movie["year_released"] = 2012
+new_movie["rated"] = "PG-13"
+new_movie["studio_id"] = Studio.find_by({"name" => "Warner Bros."}).id
+new_movie.save
+
+actors = ["Christian Bale", "Michael Caine", "Liam Neeson", "Katie Holmes", "Gary Oldman", "Heath Ledger", "Aaron Eckhart", "Maggie Gyllenhaal", "Tom Hardy", "Joseph Gordon-Levitt", "Anne Hathaway" ]
+for actor in actors do
+    new_actor = Actor.new
+    new_actor["name"] = actor
+    new_actor.save
+end ## Used loops to avoid repetitive code
+
+roles = [
+  { movie: "Batman Begins", actor: "Christian Bale", role: "Bruce Wayne" },
+  { movie: "Batman Begins", actor: "Michael Caine", role: "Alfred" },
+  { movie: "Batman Begins", actor: "Liam Neeson", role: "Ra's Al Ghul" },
+  { movie: "Batman Begins", actor: "Katie Holmes", role: "Rachel Dawes" },
+  { movie: "Batman Begins", actor: "Gary Oldman", role: "Commissioner Gordon" },
+  { movie: "The Dark Knight", actor: "Christian Bale", role: "Bruce Wayne" },
+  { movie: "The Dark Knight", actor: "Heath Ledger", role: "Joker" },
+  { movie: "The Dark Knight", actor: "Aaron Eckhart", role: "Harvey Dent" },
+  { movie: "The Dark Knight", actor: "Michael Caine", role: "Alfred" },
+  { movie: "The Dark Knight", actor: "Maggie Gyllenhaal", role: "Rachel Dawes" },
+  { movie: "The Dark Knight Rises", actor: "Christian Bale", role: "Bruce Wayne" },
+  { movie: "The Dark Knight Rises", actor: "Gary Oldman", role: "Commissioner Gordon" },
+  { movie: "The Dark Knight Rises", actor: "Tom Hardy", role: "Bane" },
+  { movie: "The Dark Knight Rises", actor: "Joseph Gordon-Levitt", role: "John Blake" },
+  { movie: "The Dark Knight Rises", actor: "Anne Hathaway", role: "Selina Kyle" }
+]
+
+for rol in roles do
+    new_role = Role.new
+    new_role["character_name"] = rol[:role]
+    new_role["actor_id"] = Actor.find_by({"name" => rol[:actor]}).id
+    new_role["movie_id"] = Movie.find_by({"title" => rol[:movie]}).id
+    new_role.save
+end ## Used loops to avoid repetitive code
 
 # Prints a header for the movies output
 puts "Movies"
@@ -90,7 +193,10 @@ puts "======"
 puts ""
 
 # Query the movies data and loop through the results to display the movies output.
-# TODO!
+
+for mov in Movie.all do
+    puts mov.title.ljust(25) + mov.year_released.to_s.ljust(10) + mov.rated.ljust(10) + Studio.find_by({"id" => mov.studio_id}).name
+end ## Used ljust to adjust column width
 
 # Prints a header for the cast output
 puts ""
@@ -98,5 +204,8 @@ puts "Top Cast"
 puts "========"
 puts ""
 
+
 # Query the cast data and loop through the results to display the cast output for each movie.
-# TODO!
+for cast in Role.all do
+    puts Movie.find_by({"id" => cast.movie_id}).title.ljust(25) + Actor.find_by({"id" => cast.actor_id}).name.ljust(25) + cast.character_name
+end ## Used ljust to adjust column width
